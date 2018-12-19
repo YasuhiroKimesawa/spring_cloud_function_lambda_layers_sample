@@ -1,0 +1,9 @@
+{
+  "name": "sample",
+  "version": "0.0.0",
+  "description": "",
+  "dependencies": {
+    "serverless": "^1.34.1"
+  },
+  "devDependencies": {}
+}
