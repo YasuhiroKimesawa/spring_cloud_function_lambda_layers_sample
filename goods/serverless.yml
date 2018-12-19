@@ -1,0 +1,31 @@
+service: sampleJava
+
+provider:
+  name: aws
+  runtime: java8
+  timeout: 30
+
+  stage: dev
+  region: ap-northeast-1
+  profile: todolife
+
+package:
+  artifact: build/libs/goods-1.0-SNAPSHOT-aws.jar
+
+functions:
+  hello:
+    handler: org.springframework.cloud.function.adapter.aws.SpringBootStreamHandler
+
+    layers:
+    - ${cf:sampleJavaLayer-dev.JavaLibrariesLayerExport}
+    environment:
+      FUNCTION_NAME: goods
+      MAIN_CLASS: Application
+    events:
+    - http:
+        path: goods
+        method: post
+        integration: lambda
+        request:
+          template:
+            application/json: '$input.json("$")'

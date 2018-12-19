@@ -13,10 +13,10 @@ provider:
 #  individually: true
 
 layers:
-  libraries:
+  javaLibraries:
     package:
       artifact: build/distributions/libraries-1.0-SNAPSHOT.zip
-    name: dev-libraries
+    name: dev-javalibraries
     compatibleRuntimes:
     - java8
     allowedAccounts:
@@ -24,8 +24,8 @@ layers:
 
 resources:
   Outputs:
-    JavaLayerExport:
+    JavaLibrariesLayerExport:
       Value:
-        Ref: LibrariesLambdaLayer
+        Ref: JavaLibrariesLambdaLayer
       Export:
-        Name: LibrariesLambdaLayer
+        Name: JavaLibrariesLambdaLayer
