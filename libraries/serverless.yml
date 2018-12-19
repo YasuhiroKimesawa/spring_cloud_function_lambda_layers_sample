@@ -1,0 +1,31 @@
+service: sampleJavaLayer
+
+provider:
+  name: aws
+  runtime: java8
+  timeout: 30
+
+  stage: dev
+  region: ap-northeast-1
+  profile: todolife
+
+#package:
+#  individually: true
+
+layers:
+  libraries:
+    package:
+      artifact: build/distributions/libraries-1.0-SNAPSHOT.zip
+    name: dev-libraries
+    compatibleRuntimes:
+    - java8
+    allowedAccounts:
+    - '*'
+
+resources:
+  Outputs:
+    JavaLayerExport:
+      Value:
+        Ref: LibrariesLambdaLayer
+      Export:
+        Name: LibrariesLambdaLayer
