@@ -1,0 +1,6 @@
+app:
+spring:
+  cloud:
+    function:
+      scan:
+        packages: handlers

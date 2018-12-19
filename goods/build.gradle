@@ -1,16 +1,99 @@
-plugins {
-    id 'java'
-}
-
 group 'spring-cloud-function-lambda-layers-sample'
 version '1.0-SNAPSHOT'
 
-sourceCompatibility = 1.8
-
-repositories {
-    mavenCentral()
+buildscript {
+    ext {
+        springBootVersion = '2.1.1.RELEASE'
+        wrapperVersion = '1.0.13.BUILD-SNAPSHOT'
+        shadowVersion = '2.0.1'
+    }
+    repositories {
+        mavenLocal()
+        jcenter()
+        mavenCentral()
+        maven { url "https://repo.spring.io/snapshot" }
+        maven { url "https://repo.spring.io/milestone" }
+    }
+    dependencies {
+        classpath "com.github.jengelman.gradle.plugins:shadow:${shadowVersion}"
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
 }
 
-dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'idea'
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'org.springframework.boot'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+assemble.dependsOn = [shadowJar]
+
+ext {
+    springCloudFunctionVersion = "2.0.0.RC2"
+    springBootVersion = "2.1.1.RELEASE"
+    awsLambdaEventsVersion = "1.2.1"
+    awsLambdaCoreVersion = "1.1.0"
+}
+ext['reactor.version'] = "3.1.7.RELEASE"
+
+
+import com.github.jengelman.gradle.plugins.shadow.transformers.*
+jar {
+    manifest {
+        attributes 'Main-Class': 'Application'
+    }
+}
+
+shadowJar {
+    classifier = 'aws'
+    dependencies {
+        exclude(dependency("org.springframework.cloud:spring-cloud-function-web:${springCloudFunctionVersion}"))
+    }
+    // Required for Spring
+    mergeServiceFiles()
+    append 'META-INF/spring.handlers'
+    append 'META-INF/spring.schemas'
+    append 'META-INF/spring.tooling'
+    transform(PropertiesFileTransformer) {
+        paths = ['META-INF/spring.factories' ]
+        mergeStrategy = "append"
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "https://repo.spring.io/snapshot" }
+    maven { url "https://repo.spring.io/milestone" }
+}
+
+configurations {
+    provided
+}
+
+dependencies{
+    provided project(':libraries')
+}
+
+compileJava {
+    sourceSets.main.compileClasspath += configurations.provided
+    sourceSets.test.compileClasspath += configurations.provided
+}
+
+test {
+    classpath += configurations.provided
+}
+
+bootRun {
+    classpath += configurations.provided
+}
+
+idea {
+    module {
+        scopes.PROVIDED.plus += [configurations.provided]
+    }
 }
