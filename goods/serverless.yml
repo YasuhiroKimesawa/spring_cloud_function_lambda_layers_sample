@@ -7,7 +7,6 @@ provider:
 
   stage: dev
   region: ap-northeast-1
-  profile: todolife
 
 package:
   artifact: build/libs/goods-1.0-SNAPSHOT-aws.jar
